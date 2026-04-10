@@ -4,12 +4,6 @@
 
 ---
 
-## 📸 Demo
-
-<!-- Add a photo or GIF of your finished build here -->
-
----
-
 ## 🛒 Materials
 
 > All links are to UK suppliers.
