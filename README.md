@@ -1,32 +1,139 @@
-# Train-Departure-Board
-This repository contains the code, and instructions for making your own custom train departure board. 
+# 🚆 Pico Train Departure Board
 
-Materials required (all links to products are for UK suppliers) :
-- Raspberry Pi Pico WH (easier if already soldered hence the WH instead of W)
-- USB micro cable that supports both data and power transfer (probably already owned, common with console controllers, external storage etc.)
-- PC or Mac to load micropython code and to power the device (power can be supplied by any means once micropython is loaded onto the pico)
-- Breadboard to form circuit (highly recommend https://tinyurl.com/4tm4zn82 as it is labelled perfectly for the pico)
-- Female to male jumper wires (these work fine https://tinyurl.com/5hcm279r)
-- OLED Display Module (the one I used https://tinyurl.com/ys6shs5f , the code should work for any display that uses either the ssd1306 or sh1106 drivers - depending on which driver your display uses and what it's resolution is changed may have to be made on lines 9/10 of the main.py file and to size variables DISPLAY_W and DISPLAY_H)
+> A live UK train departure board running on a Raspberry Pi Pico W with an OLED display — fetching real-time data from the National Rail Staff Departure Board API.
 
-<img width="1440" height="1126" alt="image" src="https://github.com/user-attachments/assets/80bb9efa-c87f-42db-91ab-f49ac9a91c6e" />
+---
 
-The above image shows the required wiring for the 4 display pins (VCC,GND,SDA and SCL) to the respective headers on the pico. The male end of the jumper cable just needs to sit adjacent to the pin. A portion of my setup (showing the male end of the jumper cables in row 16 and 17) is shown below to make it clearer.
+## 📸 Demo
 
-<img width="462" height="661" alt="image" src="https://github.com/user-attachments/assets/1051ee8c-e4b0-478f-aaab-90bfe3e72378" />
+<!-- Add a photo or GIF of your finished build here -->
 
-To begin programming the pico it needs to have micropython installed. I recommend you watch the first 1 min 23 secs of this video to install thonny and subsequently micropython. https://www.youtube.com/watch?v=_ouzuI_ZPLs
+---
 
-Once thonny is installed, firstly create two new files:
-- one should be called ssd1306 and contain the relevant code from this repo for the file
-- one should be called sh1106 and also contain the relvant code from this repo for the file
+## 🛒 Materials
 
-Ensure both of those are saved to the pico and then you can simply create one more file "main.py" and paste the code from the repo into that. 
+> All links are to UK suppliers.
 
-IMPORTANT CHANGES THAT WILL/MAY NEED TO BE MADE TO THE "main.py" file:
-- you WILL need to add the ssid and password details for as many networks as you wish to the main.py file so the api can make calls and fetch live data
-- you WILL need to sign up for an account with the Rail Data Marketplace (took me about 24 hours for my application be be reviewed and accepted) and once you have an account subscribe to the Staff Version of the Live Departure Board API where you will be given a unique api key which needs to be entered into the main.py code
-- you MAY need to change the DISPLAY_W and DISPLAY_H variables if your resolution is different to mine
-- you MAY need to comment out of one the drivers and use the other other if your display uses a different driver to mine
+| Component | Notes |
+|---|---|
+| [Raspberry Pi Pico WH](https://tinyurl.com/4tm4zn82) | WH recommended — comes pre-soldered |
+| Micro USB cable | Must support data transfer, not charge-only. Common with console controllers, external hard drives etc. |
+| PC or Mac | To load MicroPython and code onto the Pico |
+| [Breadboard](https://tinyurl.com/4tm4zn82) | This one is labelled perfectly for the Pico |
+| [Female to male jumper wires](https://tinyurl.com/5hcm279r) | Standard set works fine |
+| [OLED Display Module](https://tinyurl.com/ys6shs5f) | I used a 1.3" SH1106 128x64. See [display compatibility](#-display-compatibility) below |
 
-Have fun!
+---
+
+## 🔌 Wiring
+
+Connect the 4 display pins to the Pico as follows:
+
+| Display Pin | Pico Pin |
+|---|---|
+| VCC | 3V3 — Pin 36 |
+| GND | GND — Pin 38 |
+| SDA | GP16 — Pin 21 |
+| SCL | GP17 — Pin 22 |
+
+> ⚠️ Check the physical labels on your display — some modules have pins in the order `GND VCC SCL SDA` rather than `VCC GND SDA SCL`.
+
+The male end of the jumper cable simply sits in the breadboard row adjacent to the pin. The image below shows the required wiring:
+
+<img width="1440" alt="Wiring diagram" src="https://github.com/user-attachments/assets/80bb9efa-c87f-42db-91ab-f49ac9a91c6e" />
+
+And here is a portion of my own setup showing the male ends of the jumper cables sitting in rows 16 and 17:
+
+<img width="462" alt="My wiring setup" src="https://github.com/user-attachments/assets/1051ee8c-e4b0-478f-aaab-90bfe3e72378" />
+
+---
+
+## 💾 Installing MicroPython
+
+If you haven't used a Pico before, you'll need to install MicroPython first. The first **1 minute 23 seconds** of [this video](https://www.youtube.com/watch?v=_ouzuI_ZPLs) walks you through installing Thonny and flashing MicroPython onto the Pico.
+
+---
+
+## 🚀 Setup
+
+Once Thonny is installed and MicroPython is on your Pico:
+
+**1.** Create a new file in Thonny, paste in the contents of `sh1106.py` from this repo, and save it to the Pico as `sh1106.py`
+
+**2.** Do the same for `ssd1306.py`
+
+**3.** Create one more file, paste in the contents of `main.py`, make the required changes below, and save it to the Pico as `main.py`
+
+> Files saved to the Pico will persist and run automatically on power-up.
+
+---
+
+## ⚙️ Configuration
+
+Open `main.py` and make the following changes at the top of the file:
+
+### ✅ Required
+
+**WiFi credentials** — add the SSID and password for your network(s):
+```python
+WIFI_NETWORKS = [
+    ("YOUR_SSID",    "YOUR_PASSWORD"),
+    ("YOUR_SSID_2",  "YOUR_PASSWORD_2"),  # optional extras
+]
+```
+
+**API key** — sign up for a free account at [Rail Data Marketplace](https://raildata.org.uk) and subscribe to the **Staff Version of the Live Departure Board API**. Once approved (allow ~24 hours), paste your key in:
+```python
+API_KEY = "YOUR_API_KEY"
+```
+
+**Station** — set your 3-letter CRS station code:
+```python
+CRS = "PLG"  # e.g. VIC for Victoria, LBG for London Bridge
+```
+
+**Timezone** — set to `1` during BST (summer) or `0` during GMT (winter):
+```python
+UTC_OFFSET = 1
+```
+
+### 🔧 May Be Required
+
+**Display resolution** — if your display is a different size to the default 128×64:
+```python
+DISPLAY_W = 128
+DISPLAY_H = 64
+```
+
+**Display driver** — if your display uses SSD1306 instead of SH1106, comment out line 9 and uncomment line 10 in `main.py`:
+```python
+import sh1106   # for SH1106 displays (e.g. most 1.3" OLEDs)
+# import ssd1306  # for SSD1306 displays (e.g. most 0.96" OLEDs)
+```
+And update the initialisation line in `main()` accordingly.
+
+---
+
+## 🖥️ Display Compatibility
+
+The code is designed to work with any monochrome I2C OLED that uses the **SH1106** or **SSD1306** driver. Both driver files are included in this repo.
+
+| Display | Driver | Resolution | Changes needed |
+|---|---|---|---|
+| 1.3" OLED (this build) | SH1106 | 128×64 | None |
+| 0.96" OLED | SSD1306 | 128×64 | Swap driver |
+| 0.91" OLED | SSD1306 | 128×32 | Swap driver + `DISPLAY_H = 32` |
+| 2.42" OLED | SSD1306 | 128×64 | Swap driver |
+
+---
+
+## 🔋 Powering Without a Computer
+
+Once `main.py` is saved to the Pico it will run automatically on boot — no computer needed. Power options include:
+
+- **USB power bank** — plug straight in via Micro USB. Look for one rated for low-current devices
+- **3×AA battery holder with Micro USB** — such as [this one from Pi Hut](https://thepihut.com/products/microusb-battery-holder-3xaa) — plugs directly into the Pico, no soldering required. Use alkaline (non-rechargeable) batteries for best results
+
+---
+
+Have fun! 🎉
